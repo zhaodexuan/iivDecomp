@@ -78,7 +78,7 @@ head(dat)
 
 ## Reference
 
-Shui, D. (2026). Disentangling meaningful intraindividual variability from careless responding and measurement error: A variance decomposition framework for intensive longitudinal data. Manuscript under review.
+
 
 ## License
 
