@@ -1,0 +1,26 @@
+Package: iivDecomp
+Type: Package
+Title: Decompose Intraindividual Variability into Signal and Noise Components
+Version: 1.0.0
+Authors@R: person("Dahai", "Shui", role = c("aut", "cre"),
+    email = "user@example.com")
+Description: Provides tools for decomposing observed intraindividual
+    variability (IIV) in intensive longitudinal data into four components:
+    true construct-related variability, measurement error, careless responding
+    (insufficient effort responding; IER), and context effects. Implements an
+    expectation-maximization (EM) mixture model, binary IER screening methods,
+    and simulation utilities. Based on the framework described in "Disentangling
+    Meaningful Intraindividual Variability From Careless Responding and
+    Measurement Error" (manuscript under review).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Imports:
+    lme4 (>= 1.1-30),
+    nlme (>= 3.1-150),
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0)
+RoxygenNote: 7.3.0
+URL: https://github.com/user/iivDecomp
+BugReports: https://github.com/user/iivDecomp/issues
