@@ -35,3 +35,11 @@ test_that("iiv_detect_mahalanobis works", {
   md <- iiv_detect_mahalanobis(dat)
   expect_true("flag" %in% names(md))
 })
+
+test_that("iiv_detect_mahalanobis is empty-safe and aligned on clean data", {
+  dat <- iiv_generate(N = 50, T = 30, K = 4, sigma_tau = 0.3, phi = 0.5, seed = 123)
+  md <- iiv_detect_mahalanobis(dat)
+  expect_equal(nrow(md), 50 * 30)
+  expect_false(any(md$flag))            # clean data: nothing should be flagged
+  expect_equal(nrow(md[md$flag, ]), 0)  # flagged-subset ops must not error
+})

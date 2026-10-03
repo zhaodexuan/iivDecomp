@@ -33,8 +33,12 @@ iiv_detect_longstring <- function(data, R = 5) {
 #' @param data A data frame from \code{\link{iiv_generate}}.
 #' @param alpha Significance threshold for outlier detection (default 0.001).
 #'
-#' @return A data frame with columns id, time, md (Mahalanobis distance),
-#'   and flag (logical: suspected IER).
+#' @return A data frame with one row per complete person-time (after reshaping
+#'   to wide format): columns id, time, md (Mahalanobis distance), and flag
+#'   (logical: suspected IER). Returns a zero-row data frame when fewer than
+#'   three complete person-times are available, and returns all-FALSE flags
+#'   when no observation exceeds the threshold (i.e., the empty-flag case is
+#'   handled without error).
 #'
 #' @examples
 #' dat <- iiv_generate(N = 50, T = 30, K = 4, sigma_tau = 0.3,
@@ -50,17 +54,23 @@ iiv_detect_mahalanobis <- function(data, alpha = 0.001) {
                 idvar = c("id", "time"), direction = "wide")
   icols <- grep("^y\\.", names(pw))
 
+  empty_result <- data.frame(id = integer(), time = integer(),
+                             md = numeric(), flag = logical())
+
   if (length(icols) < 2) {
-    return(data.frame(id = integer(), time = integer(),
-                      md = numeric(), flag = logical()))
+    return(empty_result)
   }
 
   X <- as.matrix(pw[, icols, drop = FALSE])
-  X <- X[complete.cases(X), , drop = FALSE]
-  if (nrow(X) < 3) {
-    return(data.frame(id = integer(), time = integer(),
-                      md = numeric(), flag = logical()))
+  keep <- complete.cases(X)
+  if (sum(keep) < 3) {
+    return(empty_result)
   }
+
+  # Keep distances aligned with rows: compute on complete cases only,
+  # then restrict the person-time table to the same rows.
+  X <- X[keep, , drop = FALSE]
+  pw <- pw[keep, , drop = FALSE]
 
   mu <- colMeans(X, na.rm = TRUE)
   S <- cov(X, use = "pairwise.complete.obs")
@@ -69,18 +79,8 @@ iiv_detect_mahalanobis <- function(data, alpha = 0.001) {
     error = function(e) mahalanobis(X, mu, diag(diag(S)))
   )
 
-  K <- length(icols)
-  threshold <- qchisq(1 - alpha, df = K)
-  flagged <- pw[md > threshold, c("id", "time")]
-  flagged$md <- md[md > threshold]
-  flagged$flag <- TRUE
-
-  # Add non-flagged
-  clean <- pw[md <= threshold, c("id", "time")]
-  clean$md <- md[md <= threshold]
-  clean$flag <- FALSE
-
-  rbind(flagged, clean)
+  threshold <- qchisq(1 - alpha, df = length(icols))
+  data.frame(id = pw$id, time = pw$time, md = md, flag = md > threshold)
 }
 
 #' Classical Aggregation Method (M1)

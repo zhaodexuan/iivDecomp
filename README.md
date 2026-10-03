@@ -9,7 +9,7 @@ An R package for decomposing observed intraindividual variability (IIV) in inten
 
 ```r
 # Install from GitHub
-remotes::install_github("user/iivDecomp")
+remotes::install_github("zhaodexuan/iivDecomp")
 ```
 
 ## Quick Start
@@ -78,7 +78,7 @@ head(dat)
 
 ## Reference
 
-
+Manuscript under review.
 
 ## License
 

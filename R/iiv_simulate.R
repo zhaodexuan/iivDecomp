@@ -72,7 +72,7 @@ iiv_generate <- function(N, T, K, sigma_tau, phi,
     }
   }
 
-  y <- pmax(1, pmin(R, round(ys)))
+  y <- pmax(1, pmin(R, round(ys + (R + 1) / 2)))  # center latent on the response scale before discretization
   ier_mask <- rep(FALSE, nr)
 
   # IER injection
